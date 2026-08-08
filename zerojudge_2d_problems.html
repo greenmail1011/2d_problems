@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ZeroJudge 二維題型精選清單（依難易度排序）</title>
+<style>
+:root{--bg:#0f1115;--card:#181c23;--line:#262c36;--fg:#e6e9ef;--dim:#8c96a8;--acc:#7fc8ff;
+--d1:#5ad19b;--d2:#9ad15a;--d3:#ffc46b;--d4:#ff7d7d;--g3:#c39bff;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Noto Sans TC","PingFang TC",system-ui,sans-serif;line-height:1.5}
+header{padding:26px 24px 12px;border-bottom:1px solid var(--line)}
+h1{margin:0 0 6px;font-size:22px}
+.sub{color:var(--dim);font-size:13px;max-width:900px}
+.wrap{padding:16px 24px 60px;max-width:1300px;margin:0 auto}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0 8px}
+.lab{color:var(--dim);font-size:12px;width:64px;flex:none}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--dim);padding:4px 11px;border-radius:999px;font-size:13px;cursor:pointer;user-select:none}
+.chip:hover{border-color:var(--acc);color:var(--fg)}
+.chip.on{background:var(--acc);border-color:var(--acc);color:#0b0e13;font-weight:600}
+input[type=search]{flex:1;min-width:200px;background:var(--card);border:1px solid var(--line);color:var(--fg);padding:8px 12px;border-radius:8px;font-size:14px}
+.count{color:var(--dim);font-size:13px;margin:8px 0 10px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:var(--dim);font-weight:500;font-size:12px;padding:8px 10px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);cursor:pointer;white-space:nowrap}
+th:hover{color:var(--fg)}
+th.sorted{color:var(--acc)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:hover td{background:#141821}
+a{color:var(--acc);text-decoration:none}
+a:hover{text-decoration:underline}
+.pid{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+a.tl{color:var(--fg);text-decoration:none}
+a.tl:hover{color:var(--acc);text-decoration:underline}
+a.sub2{font-size:11px;color:#4d5666;border:1px solid var(--line);border-radius:4px;padding:0 5px;margin-left:6px;white-space:nowrap;opacity:0;transition:opacity .12s}
+tr:hover a.sub2{opacity:1}
+a.sub2:hover{color:var(--acc);border-color:var(--acc);text-decoration:none}
+.tag{display:inline-block;padding:1px 7px;border-radius:5px;font-size:11px;border:1px solid var(--line);color:var(--dim);white-space:nowrap}
+.dim{color:var(--dim);font-size:12px}
+.dims{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--dim)}
+.num{font-family:ui-monospace,Menlo,monospace;font-size:12px;text-align:right}
+.dbar{display:flex;align-items:center;gap:7px;min-width:120px}
+.dbar i{display:block;height:6px;border-radius:3px;flex:none}
+.dt{font-size:11px;padding:1px 6px;border-radius:5px;border:1px solid;white-space:nowrap}
+.D0{color:var(--d1);border-color:#2c4a3d}.D1{color:var(--d2);border-color:#3a4a2c}
+.D2{color:var(--d3);border-color:#4a3f2c}.D3{color:var(--d4);border-color:#4a2c2c}
+footer{color:var(--dim);font-size:12px;padding:22px 0 0;border-top:1px solid var(--line);margin-top:26px}
+.note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--acc);padding:12px 14px;border-radius:6px;font-size:13px;color:var(--dim);margin:16px 0 0}
+</style>
+</head>
+<body>
+<header>
+<h1>ZeroJudge 二維題型精選清單</h1>
+<div class="sub">從 ZeroJudge 全站 3,586 題逐題抓取題敘與範例測資後篩出 <b>206 題</b>純二維實作題（格狀輸入輸出 + 回合模擬），已排除 DP、BFS/DFS、圖論、最短路、數論、大數等演算法題。預設由易到難排序，點欄位標題可切換排序。</div>
+</header>
+<div class="wrap">
+
+<div class="bar"><span class="lab">難易度</span><span id="diffBar" style="display:contents"></span></div>
+<div class="bar"><span class="lab">輸入型態</span><span id="typeBar" style="display:contents"></span></div>
+<div class="bar"><span class="lab">主題</span><span id="topicBar" style="display:contents"></span></div>
+<div class="bar"><span class="lab">搜尋</span><input type="search" id="q" placeholder="題號或題名…"></div>
+<div class="count" id="count"></div>
+
+<table>
+<thead><tr>
+<th data-k="0" style="width:74px">題號</th>
+<th data-k="1">題名</th>
+<th data-k="8" style="width:168px" class="sorted">難易度 ▲</th>
+<th data-k="6" style="width:76px">通過率</th>
+<th data-k="7" style="width:84px">解題人數</th>
+<th data-k="2" style="width:82px">輸入型態</th>
+<th data-k="3" style="width:96px">主題</th>
+<th data-k="4" style="width:78px">範例維度</th>
+<th data-k="5" style="width:80px">題庫</th>
+</tr></thead>
+<tbody id="tb"></tbody>
+</table>
+
+<div class="note">
+<b>難易度怎麼算：</b>ZeroJudge 沒有官方難度，這裡用 <code>0.7 ×（100 − 通過比率）＋ 0.3 ×（人氣冷門度）</code> 綜合計算，分數越高越難。通過比率取自各題「通過人數／送出人數」；人氣以解題人數取對數，避免冷門新題被誤判成簡單。分級門檻：入門 &lt;22、基礎 22–38、中等 38–55、挑戰 ≥55。<br>
+<b>範例維度：</b><code>5x5</code> 是範例測資中偵測到連續 5 行、每行 5 個數字的矩形區塊；<code>C9</code> 是連續 9 行等長字元格（如 <code>.#..#</code>）；<code>—</code> 表示屬回合模擬類、輸入非格狀。
+</div>
+
+<footer>
+資料抓取日期 2026-08-08｜來源：<a href="https://zerojudge.tw/" target="_blank">zerojudge.tw</a>｜通過率為該站標示之「非即時」統計。
+</footer>
+</div>
+
+<script>
+const TYPE={NU:"數字格",CH:"字元格",SM:"回合模擬"};
+const DIFF=[["入門",0,22],["基礎",22,38],["中等",38,55],["挑戰",55,999]];
+const D=[
+["a015", "矩陣的翻轉", "NU", "矩陣運算", "3x2", "BASIC", 94, 32382, 7.1],
+["d039", "11044 - Searching for Nessy", "NU", "迷宮地圖", "3x2", "UVA", 96, 3901, 11.3],
+["c315", "I, ROBOT 前傳", "NU", "迷宮地圖", "4x2", "BASIC", 97, 2804, 11.4],
+["b127", "會議中心（Room）", "SM", "矩陣運算", "—", "CONTEST", 94, 4470, 12.3],
+["e605", "10189 - Minesweeper", "CH", "迷宮地圖", "C4", "UVA", 96, 1914, 13.1],
+["e798", "p5. 卷積神經網路", "NU", "影像處理", "6x6", "TOI", 96, 1814, 13.2],
+["a417", "螺旋矩陣", "NU", "幾何圖形", "3x3", "BASIC", 92, 3939, 14.0],
+["d625", "踩地雷真好玩", "CH", "棋盤遊戲", "C7", "ORIGINAL", 96, 1110, 14.5],
+["a867", "7. Minelayer", "CH", "棋盤遊戲", "C15", "CONTEST", 97, 802, 14.7],
+["a781", "3. Checkerboard", "CH", "棋盤遊戲", "C16", "CONTEST", 98, 593, 14.8],
+["c036", "00573 - The Snail", "NU", "座位表格", "24x4", "UVA", 95, 1287, 14.8],
+["h027", "202001_2 矩陣總和", "NU", "矩陣運算", "5x5", "TOI", 94, 1526, 15.1],
+["a694", "吞食天地二", "NU", "矩陣運算", "3x3", "BASIC", 90, 4342, 15.2],
+["d250", "94北縣賽-2-數獨問題 (Sudoku)", "SM", "矩陣運算", "—", "CONTEST", 97, 619, 15.3],
+["i840", "字元矩陣轉置", "CH", "矩陣運算", "C4", "BASIC", 98, 437, 15.6],
+["c812", "1. 觀光景點", "NU", "迷宮地圖", "6x3", "CONTEST", 96, 702, 15.7],
+["e838", "P5. 炸彈超人(Bombs)", "CH", "迷宮地圖", "C7", "TOI", 96, 673, 15.8],
+["k731", "1. 路徑偵測", "NU", "迷宮地圖", "9x2", "TOI", 91, 2530, 15.9],
+["e974", "座位安排 (Seats)", "NU", "座位表格", "4x5", "TOI", 95, 807, 16.1],
+["o712", "2. 蒐集寶石", "NU", "迷宮地圖", "5x5", "TOI", 92, 1711, 16.2],
+["e287", "機器人的路徑", "SM", "迷宮地圖", "—", "TOI", 90, 2973, 16.2],
+["e787", "b2.尋寶地圖(Map)", "NU", "迷宮地圖", "6x4", "TOI", 94, 872, 16.6],
+["d596", "1. 猜九宮格裡的地雷", "NU", "棋盤遊戲", "3x3", "CONTEST", 93, 1078, 16.7],
+["b005", "布林矩陣的等價短陣", "NU", "矩陣運算", "4x4", "CONTEST", 94, 667, 17.3],
+["b455", "請輸出這張圖片的RGB數值（難度↓）", "NU", "影像處理", "4x12", "ORIGINAL", 97, 293, 17.3],
+["f418", "Word Search Puzzle", "CH", "幾何圖形", "C3", "BASIC", 94, 575, 17.6],
+["b216", "1. 棒球九宮格", "NU", "幾何圖形", "9x2", "CONTEST", 94, 535, 17.8],
+["k152", "文文與她的距離 (楚河漢界篇)", "SM", "座位表格", "—", "BASIC", 96, 277, 18.1],
+["i860", "13171 - Pixel Art", "NU", "影像處理", "3x4", "UVA", 98, 152, 18.3],
+["j062", "11470 - Square Sums", "NU", "幾何圖形", "5x5", "UVA", 100, 85, 18.4],
+["b182", "3. 矩形的內部與外部", "NU", "幾何圖形", "4x4", "CONTEST", 95, 288, 18.7],
+["c048", "10161 - Ant on a Chessboard", "NU", "棋盤遊戲", "3x2", "UVA", 92, 591, 19.0],
+["a628", "8. Number Spiral", "NU", "幾何圖形", "7x7", "CONTEST", 94, 322, 19.1],
+["k205", "蝸牛的踩地雷攻略 1 (插旗)", "CH", "棋盤遊戲", "C9", "BASIC", 98, 105, 19.2],
+["r488", "1. 彗星撞擊", "NU", "迷宮地圖", "5x2", "TOI", 91, 691, 19.3],
+["b882", "溢位 の OωO學長？", "SM", "座位表格", "—", "ORIGINAL", 90, 891, 19.3],
+["b554", "5.貪吃龍遊戲", "CH", "棋盤遊戲", "C4", "CONTEST", 95, 222, 19.4],
+["k554", "地雷很危險", "NU", "棋盤遊戲", "4x6", "BASIC", 92, 509, 19.4],
+["a796", "F.房布的地圖", "NU", "迷宮地圖", "3x2", "ORIGINAL", 97, 123, 19.5],
+["m371", "2. 卡牌遊戲", "NU", "座位表格", "3x6", "TOI", 87, 1831, 19.5],
+["b375", "幻方(魔方陣)之三：6 階", "NU", "矩陣運算", "6x6", "ORIGINAL", 96, 121, 20.3],
+["b574", "進德教育", "NU", "座位表格", "3x2", "ORIGINAL", 93, 267, 20.3],
+["n700", "蝸牛的踩地雷攻略 3 (點方塊)", "CH", "棋盤遊戲", "C9", "BASIC", 97, 90, 20.3],
+["d914", "2. 圍棋資料庫比對", "NU", "棋盤遊戲", "5x3", "CONTEST", 92, 342, 20.4],
+["e513", "11349 - Symmetric Matrix", "NU", "矩陣運算", "8x3", "UVA", 86, 1604, 20.6],
+["b580", "一條蛇", "NU", "幾何圖形", "3x3", "ORIGINAL", 94, 175, 20.7],
+["b965", "2. 矩陣轉換", "NU", "矩陣運算", "4x2", "TOI", 82, 4412, 20.7],
+["d106", "NOIP 2008 4.立体图", "NU", "幾何圖形", "3x4", "TOI", 97, 75, 20.8],
+["n136", "p8. 賓果遊戲", "NU", "棋盤遊戲", "5x5", "CONTEST", 96, 95, 20.9],
+["b185", "6. 按鈕問題", "CH", "幾何圖形", "C6", "CONTEST", 95, 120, 21.0],
+["k615", "蝸牛的踩地雷攻略 2 (掃雷)", "CH", "棋盤遊戲", "C9", "BASIC", 96, 82, 21.3],
+["d270", "11581 - Grid Successors", "CH", "矩陣運算", "C3", "UVA", 94, 130, 21.5],
+["n708", "11360 - Having Fun with Matrices", "CH", "矩陣運算", "C4", "UVA", 98, 44, 21.5],
+["b056", "1. 影像像素轉換問題", "NU", "影像處理", "4x3", "CONTEST", 89, 490, 21.6],
+["j851", "Rook", "CH", "棋盤遊戲", "C5", "BASIC", 96, 70, 21.7],
+["b548", "4.賓果遊戲", "NU", "棋盤遊戲", "5x5", "CONTEST", 91, 264, 21.8],
+["g276", "2. 魔王迷宮", "NU", "迷宮地圖", "3x4", "TOI", 83, 2138, 21.9],
+["c780", "106北二5.炮打眾卒遊戲", "SM", "棋盤遊戲", "—", "CONTEST", 93, 142, 22.0],
+["e580", "00696 - How Many Knights", "NU", "棋盤遊戲", "4x2", "UVA", 94, 102, 22.1],
+["b425", "抽菸動作 請勿模仿（馬賽克）", "SM", "影像處理", "—", "ORIGINAL", 100, 20, 22.1],
+["c165", "NOIP2015 2.扫雷游戏", "CH", "迷宮地圖", "C3", "TOI", 93, 129, 22.2],
+["s143", "矩陣的翻轉 (單筆測資版)", "NU", "矩陣運算", "4x3", "BASIC", 93, 129, 22.2],
+["k627", "L shaped plots (L形圖)", "NU", "幾何圖形", "6x4", "BASIC", 100, 15, 22.8],
+["q870", "指揮中心的數據決策", "NU", "矩陣運算", "3x3", "BASIC", 97, 35, 22.8],
+["b288", "夏季大三角", "NU", "迷宮地圖", "5x2", "ORIGINAL", 88, 368, 23.0],
+["b519", "撲克牌遊戲-商競103", "NU", "幾何圖形", "6x5", "CONTEST", 90, 214, 23.0],
+["b463", "輕輕鬆鬆學會用曲線調整色彩", "NU", "影像處理", "3x5", "ORIGINAL", 100, 13, 23.1],
+["e599", "10813 - Traditional BINGO", "NU", "棋盤遊戲", "7x10", "UVA", 91, 155, 23.1],
+["e582", "00555 - Bridge Hands", "NU", "座位表格", "4x14", "UVA", 92, 99, 23.6],
+["b266", "矩陣翻轉", "NU", "矩陣運算", "5x2", "TOI", 79, 3017, 23.8],
+["n736", "10010 - Where's Waldorf?", "NU", "矩陣運算", "4x2", "UVA", 92, 92, 23.8],
+["b459", "圖片的直方圖", "NU", "影像處理", "4x15", "ORIGINAL", 94, 47, 24.1],
+["d925", "平均高度", "NU", "矩陣運算", "3x3", "ORIGINAL", 89, 179, 24.2],
+["d906", "2. 排座位問題", "NU", "座位表格", "6x3", "CONTEST", 88, 222, 24.3],
+["e173", "圍棋入門 - 真眼假眼", "NU", "棋盤遊戲", "4x2", "ORIGINAL", 96, 25, 24.3],
+["p929", "像素圖 (Pixel)", "NU", "影像處理", "9x8", "TOI", 96, 25, 24.3],
+["b426", "宇宙光明體", "SM", "影像處理", "—", "ORIGINAL", 96, 25, 24.3],
+["b351", "幻方(魔方陣)之一：奇N 階", "NU", "矩陣運算", "3x3", "ORIGINAL", 88, 210, 24.5],
+["d352", "10957 - So Doku Checker", "NU", "矩陣運算", "9x9", "UVA", 90, 121, 24.5],
+["f608", "4. 飛黃騰達", "NU", "矩陣運算", "3x2", "TOI", 81, 1228, 24.8],
+["d575", "末日審判", "NU", "幾何圖形", "6x5", "BASIC", 81, 1157, 24.9],
+["r989", "PG. 魔法少女 サクラバエマ", "SM", "矩陣運算", "—", "ORIGINAL", 100, 6, 24.9],
+["d481", "矩陣乘法", "NU", "矩陣運算", "3x2", "ORIGINAL", 80, 1314, 25.3],
+["c625", "貪食蛇 #2 ( 穿牆版 )", "NU", "迷宮地圖", "13x2", "ORIGINAL", 92, 45, 25.6],
+["b427", "漸層色彩", "NU", "影像處理", "3x12", "ORIGINAL", 95, 19, 25.7],
+["r102", "painting", "NU", "幾何圖形", "6x5", "ORIGINAL", 95, 19, 25.7],
+["e601", "00255 - Correct Move", "NU", "棋盤遊戲", "9x3", "UVA", 86, 214, 25.8],
+["a790", "12. Haunted House Inspector", "CH", "迷宮地圖", "C7", "CONTEST", 89, 88, 26.0],
+["b121", "井字遊戲 (TTT)", "NU", "棋盤遊戲", "3x4", "CONTEST", 87, 143, 26.1],
+["b434", "圖片的梯度", "SM", "影像處理", "—", "ORIGINAL", 92, 37, 26.1],
+["q839", "4. 分組遊戲", "NU", "矩陣運算", "5x5", "TOI", 84, 305, 26.3],
+["a873", "13. Tetra Square", "CH", "幾何圖形", "C4", "CONTEST", 92, 33, 26.4],
+["c238", "旅行者_九國遊歷記<3> 小黃去蠍國", "NU", "幾何圖形", "3x2", "ORIGINAL", 93, 25, 26.4],
+["d534", "1. 戰艦謎題", "SM", "棋盤遊戲", "—", "CONTEST", 82, 499, 26.4],
+["d431", "第三題: 賓果遊戲 (bingo)", "NU", "棋盤遊戲", "5x5", "CONTEST", 86, 164, 26.5],
+["a871", "11. Museum Area", "NU", "幾何圖形", "4x2", "CONTEST", 85, 201, 26.7],
+["b439", "快取置換機制", "NU", "矩陣運算", "6x2", "ORIGINAL", 94, 16, 26.8],
+["f699", "品嘉的茶葉蛋", "NU", "迷宮地圖", "3x3", "BASIC", 86, 142, 26.9],
+["d733", "11329 - Curious Fleas", "CH", "棋盤遊戲", "C4", "UVA", 91, 31, 27.3],
+["h557", "pA. 迷宮入口(entrance)", "NU", "迷宮地圖", "4x2", "TOI", 85, 160, 27.3],
+["n762", "10279 - Mine Sweeper", "CH", "棋盤遊戲", "C16", "UVA", 90, 38, 27.5],
+["b371", "幻方(魔方陣)之二：4N階", "NU", "矩陣運算", "3x3", "ORIGINAL", 87, 77, 27.7],
+["q909", "11202 - The Least Possible Effort", "NU", "棋盤遊戲", "3x2", "UVA", 93, 13, 28.0],
+["j412", "異形大進擊", "SM", "矩陣運算", "—", "BASIC", 90, 28, 28.2],
+["b418", "八成真物", "CH", "棋盤遊戲", "C8", "ORIGINAL", 90, 27, 28.3],
+["a285", "女兒國婚友社", "NU", "座位表格", "4x4", "ORIGINAL", 88, 46, 28.4],
+["k899", "走格子飛行棋遊戲", "NU", "迷宮地圖", "4x3", "ORIGINAL", 91, 20, 28.4],
+["a243", "第四題：點燈遊戲", "NU", "棋盤遊戲", "11x11", "ORIGINAL", 88, 43, 28.5],
+["b423", "魔術橡皮擦", "SM", "影像處理", "—", "ORIGINAL", 89, 33, 28.5],
+["k184", "pA. 房屋推薦 (house)", "NU", "矩陣運算", "4x3", "TOI", 84, 121, 28.7],
+["b545", "1.蟲蟲鑽洞問題", "NU", "矩陣運算", "6x2", "CONTEST", 86, 65, 28.9],
+["e176", "圍棋進階 - 叫吃", "NU", "棋盤遊戲", "3x2", "ORIGINAL", 92, 12, 28.9],
+["a827", "5.俄羅斯方塊問題", "SM", "幾何圖形", "—", "CONTEST", 88, 37, 28.9],
+["c239", "旅行者_九國遊歷記<4> 小綠去焱國", "SM", "迷宮地圖", "—", "ORIGINAL", 87, 45, 29.1],
+["n702", "00815 - Flooded!", "NU", "幾何圖形", "3x3", "UVA", 89, 24, 29.3],
+["b053", "4. 數獨遊戲", "NU", "矩陣運算", "9x9", "CONTEST", 80, 263, 29.5],
+["r168", "完美排列", "NU", "棋盤遊戲", "7x7", "BASIC", 86, 49, 29.6],
+["d917", "5. 貼磁磚", "NU", "幾何圖形", "15x3", "CONTEST", 85, 62, 29.7],
+["c626", "貪食蛇 #1 ( 穿牆不可 )", "NU", "迷宮地圖", "4x2", "ORIGINAL", 87, 33, 29.9],
+["b575", "似曾相識", "CH", "座位表格", "C3", "ORIGINAL", 86, 42, 30.0],
+["g596", "2. 動線安排", "NU", "迷宮地圖", "8x3", "TOI", 74, 1039, 30.1],
+["b385", "幻方(魔方陣)之四：4n+2階", "NU", "矩陣運算", "3x3", "ORIGINAL", 88, 22, 30.2],
+["b436", "圖片的梯度再進化", "SM", "影像處理", "—", "ORIGINAL", 88, 22, 30.2],
+["e172", "圍棋入門 - 棋譜", "NU", "棋盤遊戲", "19x19", "ORIGINAL", 86, 38, 30.3],
+["c468", "4th CPSC Problem 4－上色新也", "CH", "幾何圖形", "C4", "ORIGINAL", 88, 15, 31.2],
+["e175", "圍棋基礎 - 氣", "NU", "棋盤遊戲", "4x2", "ORIGINAL", 88, 15, 31.2],
+["e167", "演唱會記行 - 排隊買周邊", "NU", "迷宮地圖", "5x5", "ORIGINAL", 83, 48, 31.8],
+["q366", "1. 十字轟炸", "NU", "棋盤遊戲", "3x4", "CONTEST", 80, 108, 31.8],
+["c409", "一、矩形選取(Rectangles)", "NU", "座位表格", "5x4", "ORIGINAL", 85, 23, 32.2],
+["h495", "農家樂(Agricola)", "NU", "座位表格", "3x13", "BASIC", 83, 35, 32.6],
+["e174", "圍棋基礎 - 整地", "CH", "棋盤遊戲", "C19", "ORIGINAL", 85, 17, 33.0],
+["e298", "PE. Easy Triangle(黑耀石柱)", "NU", "幾何圖形", "4x2", "ORIGINAL", 86, 12, 33.1],
+["l154", "走地圖(1)", "NU", "迷宮地圖", "5x5", "ORIGINAL", 84, 21, 33.1],
+["f737", "農地 (Farmland)", "NU", "幾何圖形", "5x5", "TOI", 79, 83, 33.2],
+["c482", "pF 絕對多數", "NU", "矩陣運算", "5x5", "CONTEST", 79, 68, 33.7],
+["e002", "兵臨城下", "SM", "棋盤遊戲", "—", "ORIGINAL", 83, 19, 34.1],
+["b547", "3.巧克力擺盒", "NU", "矩陣運算", "3x7", "CONTEST", 81, 29, 34.4],
+["c484", "kevin 的西洋棋", "SM", "棋盤遊戲", "—", "ORIGINAL", 82, 18, 34.9],
+["f435", "10267 - Graphical Editor", "SM", "影像處理", "—", "UVA", 76, 93, 35.0],
+["d263", "00989 - Su Doku", "NU", "矩陣運算", "9x9", "UVA", 72, 228, 35.4],
+["b424", "圖片縮放", "SM", "影像處理", "—", "ORIGINAL", 82, 14, 35.5],
+["b449", "加速策略 圈出角點", "CH", "影像處理", "C14", "ORIGINAL", 81, 17, 35.8],
+["b067", "6. 下棋問題", "NU", "幾何圖形", "7x10", "CONTEST", 77, 48, 36.0],
+["e034", "收房租", "NU", "矩陣運算", "3x3", "ORIGINAL", 80, 20, 36.1],
+["c357", "NO GAME NO LIFE 遊戲人生【貳】", "SM", "棋盤遊戲", "—", "ORIGINAL", 83, 5, 37.2],
+["b448", "哈哈鏡", "SM", "影像處理", "—", "ORIGINAL", 80, 12, 37.3],
+["f633", "魔術方塊 2X2", "SM", "幾何圖形", "—", "BASIC", 75, 47, 37.4],
+["b317", "紅圓茵可的野望", "NU", "迷宮地圖", "6x2", "ORIGINAL", 74, 57, 37.6],
+["b585", "來開派對唷", "NU", "幾何圖形", "6x6", "CONTEST", 74, 57, 37.6],
+["b399", "優勢產品", "NU", "矩陣運算", "8x6", "ORIGINAL", 80, 8, 38.3],
+["a473", "外援計畫", "NU", "矩陣運算", "6x2", "ORIGINAL", 73, 55, 38.4],
+["d648", "国际象棋(knight)", "NU", "棋盤遊戲", "3x2", "ORIGINAL", 71, 93, 38.5],
+["c161", "NOIP2014 3.螺旋矩阵", "SM", "幾何圖形", "—", "TOI", 73, 48, 38.8],
+["a876", "16. Ken-igma", "NU", "幾何圖形", "3x3", "CONTEST", 74, 29, 39.3],
+["b451", "圖片匹配", "NU", "影像處理", "5x4", "ORIGINAL", 76, 16, 39.4],
+["c313", "PF:終末之塔", "NU", "迷宮地圖", "4x3", "ORIGINAL", 73, 33, 39.7],
+["a562", "ITSA201112 P2 小白鼠走方格", "NU", "迷宮地圖", "4x4", "CONTEST", 69, 92, 39.9],
+["e177", "圍棋進階 - 打劫", "NU", "棋盤遊戲", "3x2", "ORIGINAL", 78, 7, 40.0],
+["e408", "賓果遊戲 (Bingo)", "NU", "棋盤遊戲", "10x5", "ORIGINAL", 73, 30, 40.0],
+["b316", "紅圓茵可的消失", "NU", "迷宮地圖", "6x2", "ORIGINAL", 73, 27, 40.2],
+["a452", "Bugs 公司", "NU", "幾何圖形", "5x2", "TOI", 75, 15, 40.3],
+["b796", "IV哈特蘭之役", "NU", "迷宮地圖", "4x2", "ORIGINAL", 75, 12, 40.8],
+["f790", "勝利的五子棋", "CH", "棋盤遊戲", "C7", "BASIC", 72, 28, 40.8],
+["o713", "3. 連鎖反應", "NU", "幾何圖形", "4x6", "TOI", 62, 375, 41.1],
+["c149", "藍燄的夢境", "NU", "幾何圖形", "4x3", "BASIC", 66, 99, 41.8],
+["a191", "在世界遙遠的彼方", "NU", "迷宮地圖", "12x2", "ORIGINAL", 68, 45, 42.4],
+["l179", "One More Grid Task - Extreme", "NU", "幾何圖形", "6x6", "BASIC", 73, 11, 42.4],
+["n138", "p10. 病毒傳播", "NU", "棋盤遊戲", "4x4", "CONTEST", 72, 13, 42.7],
+["l963", "座位(1)", "NU", "座位表格", "6x3", "ORIGINAL", 73, 8, 43.2],
+["d599", "4. 園藝達人的除草計畫", "NU", "幾何圖形", "15x2", "CONTEST", 69, 22, 43.5],
+["r473", "253 - Cube painting", "CH", "幾何圖形", "C3", "UVA", 71, 12, 43.6],
+["c500", "Problem A: AEWE-645的傷害", "NU", "座位表格", "4x4", "CONTEST", 66, 44, 43.9],
+["c629", "魔法開端", "NU", "矩陣運算", "9x2", "ORIGINAL", 75, 3, 43.9],
+["e149", "五子棋", "CH", "棋盤遊戲", "C6", "ORIGINAL", 68, 19, 44.6],
+["b530", "板條編年史 (四)：板擦界、板條界與板燒界", "SM", "矩陣運算", "2x2", "ORIGINAL", 64, 47, 45.1],
+["b342", "等高線", "NU", "矩陣運算", "7x4", "ORIGINAL", 69, 11, 45.2],
+["b452", "傻傻地幫人數錢錢", "NU", "影像處理", "7x30", "ORIGINAL", 69, 11, 45.2],
+["c422", "中國象棋棋譜記錄", "NU", "棋盤遊戲", "3x3", "ORIGINAL", 70, 7, 45.6],
+["b941", "火焰王者塔洛斯", "NU", "棋盤遊戲", "7x3", "ORIGINAL", 69, 9, 45.7],
+["f340", "4.俄羅斯方塊 (Tetris)", "CH", "幾何圖形", "C6", "TOI", 63, 48, 45.8],
+["a209", "街友的寒冷夜晚", "NU", "矩陣運算", "5x8", "ORIGINAL", 65, 26, 45.9],
+["i343", "劍術不見林", "NU", "矩陣運算", "3x3", "BASIC", 65, 13, 47.6],
+["b450", "傻傻地幫人數錢", "NU", "影像處理", "7x30", "ORIGINAL", 67, 4, 48.9],
+["o376", "滑起來咯寶貝", "NU", "幾何圖形", "9x2", "BASIC", 64, 7, 49.8],
+["b277", "反射镜", "NU", "迷宮地圖", "6x3", "ORIGINAL", 61, 14, 50.2],
+["n052", "正立方體", "NU", "幾何圖形", "3x6", "CONTEST", 62, 5, 51.9],
+["c729", "ICE 瘋狂炫技", "CH", "矩陣運算", "C5", "ORIGINAL", 60, 9, 52.0],
+["h561", "pE. 間諜(spy)", "NU", "迷宮地圖", "13x2", "TOI", 56, 18, 53.1],
+["o686", "喵-數字迷宮", "NU", "迷宮地圖", "3x3", "BASIC", 55, 12, 54.8],
+["f764", "賽車 (Race)", "NU", "迷宮地圖", "8x2", "TOI", 51, 22, 56.1],
+["b555", "攻城掠地", "NU", "幾何圖形", "5x4", "ORIGINAL", 52, 14, 56.5],
+["f869", "D影的大冒險", "NU", "迷宮地圖", "9x3", "BASIC", 50, 7, 59.6],
+["c347", "NO GAME NO LIFE 遊戲人生【壹】", "SM", "棋盤遊戲", "—", "ORIGINAL", 50, 4, 60.8],
+["b328", "災難再臨", "NU", "迷宮地圖", "8x2", "ORIGINAL", 46, 6, 62.7],
+["c148", "機器人障礙賽", "NU", "迷宮地圖", "4x2", "BASIC", 37, 74, 62.8],
+["g812", "沒有手機的上課時間", "NU", "座位表格", "4x2", "ORIGINAL", 42, 18, 62.9],
+["k991", "人生遊戲 (Game of Life)", "SM", "矩陣運算", "—", "BASIC", 43, 3, 66.3],
+["b445", "移植紋理", "SM", "影像處理", "—", "ORIGINAL", 40, 2, 69.1],
+["a506", "走投無路的國王", "CH", "棋盤遊戲", "C3", "ORIGINAL", 35, 9, 69.5],
+["b807", "II龍蟠虎踞", "NU", "幾何圖形", "4x4", "ORIGINAL", 38, 3, 69.8],
+["c620", "我收到CE，怎麼想都是測資的錯！", "NU", "矩陣運算", "3x4", "ORIGINAL", 38, 3, 69.8],
+["b358", "竹馬不敵天降", "NU", "迷宮地圖", "3x2", "ORIGINAL", 32, 6, 72.5],
+["h708", "神秘的箱子", "NU", "幾何圖形", "5x4", "ORIGINAL", 29, 2, 76.8],
+["k990", "豬哥選總統", "NU", "座位表格", "4x4", "BASIC", 29, 2, 76.8],
+["l250", "看電影", "NU", "座位表格", "5x5", "ORIGINAL", 17, 1, 86.3],
+["n173", "滾動小魔方", "CH", "幾何圖形", "C3", "ORIGINAL", 8, 1, 92.6]
+];
+
+const dIdx=s=>DIFF.findIndex(d=>s>=d[1]&&s<d[2]);
+let fType=null,fTopic=null,fDiff=null,fq="",sk=8,sd=1;
+const topics=[...new Set(D.map(d=>d[3]))].sort();
+
+function bar(el,items,get,set){
+  el.innerHTML="";
+  const all=document.createElement("span");
+  all.className="chip"+(get()===null?" on":"");all.textContent="全部";
+  all.onclick=()=>{set(null);render()};el.appendChild(all);
+  items.forEach(([v,label,n])=>{
+    const c=document.createElement("span");
+    c.className="chip"+(get()===v?" on":"");
+    c.textContent=label+" "+n;
+    c.onclick=()=>{set(get()===v?null:v);render()};
+    el.appendChild(c);
+  });
+}
+function render(){
+  let rows=D.filter(d=>(!fType||d[2]===fType)&&(!fTopic||d[3]===fTopic)&&(fDiff===null||dIdx(d[8])===fDiff)&&(!fq||(d[0]+d[1]).toLowerCase().includes(fq)));
+  rows.sort((a,b)=>{const x=a[sk],y=b[sk];return (typeof x==="number"?x-y:String(x).localeCompare(String(y)))*sd});
+  document.getElementById("count").textContent="顯示 "+rows.length+" / "+D.length+" 題";
+  document.getElementById("tb").innerHTML=rows.map(d=>{
+    const i=dIdx(d[8]),w=Math.max(6,Math.round(d[8]*0.9));
+    const u='https://zerojudge.tw/ShowProblem?problemid='+d[0];
+    return '<tr><td class="pid"><a href="'+u+'" target="_blank" rel="noopener">'+d[0]+'</a></td>'
+    +'<td><a class="tl" href="'+u+'" target="_blank" rel="noopener">'+d[1].replace(/</g,"&lt;")+'</a> <a class="sub2" href="https://zerojudge.tw/Submissions?problemid='+d[0]+'&status=AC" target="_blank" rel="noopener" title="看這題的 AC 解題紀錄">AC 紀錄</a></td>'
+    +'<td><div class="dbar"><i style="width:'+w+'px;background:var(--d'+(i+1)+')"></i><span class="dt D'+i+'">'+DIFF[i][0]+'</span><span class="dim">'+d[8]+'</span></div></td>'
+    +'<td class="num">'+d[6]+'%</td><td class="num">'+d[7].toLocaleString()+'</td>'
+    +'<td><span class="tag">'+TYPE[d[2]]+'</span></td>'
+    +'<td class="dim">'+d[3]+'</td><td class="dims">'+d[4]+'</td><td class="dim">'+d[5]+'</td></tr>';
+  }).join("");
+  bar(document.getElementById("diffBar"),DIFF.map((t,i)=>[i,t[0],D.filter(d=>dIdx(d[8])===i).length]),()=>fDiff,v=>fDiff=v);
+  bar(document.getElementById("typeBar"),Object.keys(TYPE).map(k=>[k,TYPE[k],D.filter(d=>d[2]===k).length]),()=>fType,v=>fType=v);
+  bar(document.getElementById("topicBar"),topics.map(t=>[t,t,D.filter(d=>d[3]===t).length]),()=>fTopic,v=>fTopic=v);
+  document.querySelectorAll("th").forEach(th=>{
+    const k=+th.dataset.k;
+    th.classList.toggle("sorted",k===sk);
+    th.textContent=th.textContent.replace(/ [▲▼]$/,"")+(k===sk?(sd>0?" ▲":" ▼"):"");
+  });
+}
+document.querySelectorAll("th").forEach(th=>th.onclick=()=>{
+  const k=+th.dataset.k;
+  if(k===sk)sd=-sd;else{sk=k;sd=(k===6||k===7)?-1:1;}
+  render();
+});
+document.getElementById("q").addEventListener("input",e=>{fq=e.target.value.trim().toLowerCase();render()});
+render();
+</script>
+</body>
+</html>
