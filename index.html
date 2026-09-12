@@ -54,10 +54,11 @@ footer{color:var(--dim);font-size:12px;padding:22px 0 0;border-top:1px solid var
 .btn:hover{color:var(--fg);border-color:var(--acc)}
 .btn:disabled{opacity:.4;cursor:default}
 .btn:disabled:hover{color:var(--dim);border-color:var(--line)}
-th.act,td.act{width:44px;text-align:right;padding-left:0}
-th.act2,td.act2{width:84px;text-align:right;padding-left:0}
-.xb{background:none;border:1px solid transparent;color:#4d5666;font-size:13px;line-height:1;padding:3px 7px;border-radius:6px;cursor:pointer;opacity:0;transition:opacity .12s;font-family:inherit}
-tr:hover .xb,.xb:focus-visible{opacity:1}
+th.actl,td.actl{width:32px;padding-right:0}
+th.actl2,td.actl2{width:82px;padding-right:0}
+.xb{background:none;border:1px solid transparent;color:#39404d;font-size:13px;line-height:1;padding:3px 6px;border-radius:6px;cursor:pointer;transition:color .12s,background .12s;font-family:inherit}
+tr:hover .xb{color:#6b7688}
+.xb:focus-visible{color:var(--d4);border-color:var(--d4)}
 .xb:hover{color:var(--d4);border-color:var(--d4);background:#241a1a}
 .rb{white-space:nowrap;background:var(--card);border:1px solid var(--line);color:var(--acc);font-size:12px;padding:4px 11px;border-radius:6px;cursor:pointer;font-family:inherit}
 .rb:hover{border-color:var(--acc);background:#1c2430}
@@ -90,6 +91,7 @@ tr:hover .xb,.xb:focus-visible{opacity:1}
 
 <table>
 <thead><tr>
+<th class="actl"></th>
 <th data-k="0" style="width:74px">題號</th>
 <th data-k="1">題名</th>
 <th data-k="8" style="width:168px" class="sorted">難易度 ▲</th>
@@ -99,7 +101,6 @@ tr:hover .xb,.xb:focus-visible{opacity:1}
 <th data-k="3" style="width:96px">主題</th>
 <th data-k="4" style="width:78px">範例維度</th>
 <th data-k="5" style="width:80px">題庫</th>
-<th class="act"></th>
 </tr></thead>
 <tbody id="tb"></tbody>
 </table>
@@ -118,16 +119,16 @@ tr:hover .xb,.xb:focus-visible{opacity:1}
 </div>
 <table>
 <thead><tr>
+<th class="actl2"></th>
 <th style="width:74px">題號</th>
 <th>題名</th>
 <th style="width:82px">輸入型態</th>
 <th style="width:96px">主題</th>
 <th style="width:168px">刪除時間</th>
-<th class="act2"></th>
 </tr></thead>
 <tbody id="ttb"></tbody>
 </table>
-<div class="empty" id="trashEmpty" hidden>垃圾桶是空的。<br>在清單裡把滑鼠移到某一列，點右邊的 ✕ 就會把那題丟進來。</div>
+<div class="empty" id="trashEmpty" hidden>垃圾桶是空的。<br>在清單裡點題號左邊的 ✕，就會把那題丟進來。</div>
 <div class="note">
 <b>關於刪除：</b>刪掉的題目只是被「隱藏」，原始資料還在頁面裡，隨時可以還原。這份刪除名單存在<b>這台裝置的這個瀏覽器</b>（localStorage），換電腦、換瀏覽器或清除瀏覽資料後，清單會回到完整的 206 題。想把刪除結果固定進網頁本身，用「複製題號」把名單複製起來給我，我幫你直接寫進檔案。
 </div>
@@ -404,13 +405,13 @@ function render(){
   $("tb").innerHTML=rows.map(d=>{
     const i=dIdx(d[8]),w=Math.max(6,Math.round(d[8]*0.9));
     const u='https://zerojudge.tw/ShowProblem?problemid='+d[0];
-    return '<tr><td class="pid"><a href="'+u+'" target="_blank" rel="noopener">'+d[0]+'</a></td>'
+    return '<tr><td class="actl"><button class="xb" type="button" data-id="'+d[0]+'" title="移到垃圾桶" aria-label="刪除 '+d[0]+'">✕</button></td>'
+    +'<td class="pid"><a href="'+u+'" target="_blank" rel="noopener">'+d[0]+'</a></td>'
     +'<td><a class="tl" href="'+u+'" target="_blank" rel="noopener">'+esc(d[1])+'</a> <a class="sub2" href="https://zerojudge.tw/Submissions?problemid='+d[0]+'&status=AC" target="_blank" rel="noopener" title="看這題的 AC 解題紀錄">AC 紀錄</a></td>'
     +'<td><div class="dbar"><i style="width:'+w+'px;background:var(--d'+(i+1)+')"></i><span class="dt D'+i+'">'+DIFF[i][0]+'</span><span class="dim">'+d[8]+'</span></div></td>'
     +'<td class="num">'+d[6]+'%</td><td class="num">'+d[7].toLocaleString()+'</td>'
     +'<td><span class="tag">'+TYPE[d[2]]+'</span></td>'
-    +'<td class="dim">'+d[3]+'</td><td class="dims">'+d[4]+'</td><td class="dim">'+d[5]+'</td>'
-    +'<td class="act"><button class="xb" type="button" data-id="'+d[0]+'" title="移到垃圾桶" aria-label="刪除 '+d[0]+'">✕</button></td></tr>';
+    +'<td class="dim">'+d[3]+'</td><td class="dims">'+d[4]+'</td><td class="dim">'+d[5]+'</td></tr>';
   }).join("");
   bar($("diffBar"),DIFF.map((t,i)=>[i,t[0],live.filter(d=>dIdx(d[8])===i).length]),()=>fDiff,v=>fDiff=v);
   bar($("typeBar"),Object.keys(TYPE).map(k=>[k,TYPE[k],live.filter(d=>d[2]===k).length]),()=>fType,v=>fType=v);
@@ -429,12 +430,12 @@ function renderTrash(){
   $("trashHint").textContent=ids.length?"共 "+ids.length+" 題，點「還原」放回清單":"";
   $("ttb").innerHTML=ids.map(id=>{
     const d=byId[id],u='https://zerojudge.tw/ShowProblem?problemid='+id;
-    return '<tr><td class="pid"><a href="'+u+'" target="_blank" rel="noopener">'+id+'</a></td>'
+    return '<tr><td class="actl2"><button class="rb" type="button" data-id="'+id+'">還原</button></td>'
+    +'<td class="pid"><a href="'+u+'" target="_blank" rel="noopener">'+id+'</a></td>'
     +'<td><a class="tl" href="'+u+'" target="_blank" rel="noopener">'+esc(d[1])+'</a></td>'
     +'<td><span class="tag">'+TYPE[d[2]]+'</span></td>'
     +'<td class="dim">'+d[3]+'</td>'
-    +'<td class="dim">'+fmtTime(trash[id])+'</td>'
-    +'<td class="act2"><button class="rb" type="button" data-id="'+id+'">還原</button></td></tr>';
+    +'<td class="dim">'+fmtTime(trash[id])+'</td></tr>';
   }).join("");
 }
 
