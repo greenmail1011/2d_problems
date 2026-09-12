@@ -45,6 +45,28 @@ a.sub2:hover{color:var(--acc);border-color:var(--acc);text-decoration:none}
 .D2{color:var(--d3);border-color:#4a3f2c}.D3{color:var(--d4);border-color:#4a2c2c}
 footer{color:var(--dim);font-size:12px;padding:22px 0 0;border-top:1px solid var(--line);margin-top:26px}
 .note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--acc);padding:12px 14px;border-radius:6px;font-size:13px;color:var(--dim);margin:16px 0 0}
+/* ── 垃圾桶 / 刪除功能 ───────────────────────────── */
+.tabs{display:flex;gap:8px;margin:16px 0 2px}
+.tab{background:var(--card);border:1px solid var(--line);color:var(--dim);padding:6px 15px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit}
+.tab:hover{color:var(--fg);border-color:var(--acc)}
+.tab.on{background:var(--acc);border-color:var(--acc);color:#0b0e13;font-weight:600}
+.btn{background:var(--card);border:1px solid var(--line);color:var(--dim);padding:6px 13px;border-radius:7px;font-size:12px;cursor:pointer;font-family:inherit}
+.btn:hover{color:var(--fg);border-color:var(--acc)}
+.btn:disabled{opacity:.4;cursor:default}
+.btn:disabled:hover{color:var(--dim);border-color:var(--line)}
+th.act,td.act{width:44px;text-align:right;padding-left:0}
+th.act2,td.act2{width:84px;text-align:right;padding-left:0}
+.xb{background:none;border:1px solid transparent;color:#4d5666;font-size:13px;line-height:1;padding:3px 7px;border-radius:6px;cursor:pointer;opacity:0;transition:opacity .12s;font-family:inherit}
+tr:hover .xb,.xb:focus-visible{opacity:1}
+.xb:hover{color:var(--d4);border-color:var(--d4);background:#241a1a}
+.rb{white-space:nowrap;background:var(--card);border:1px solid var(--line);color:var(--acc);font-size:12px;padding:4px 11px;border-radius:6px;cursor:pointer;font-family:inherit}
+.rb:hover{border-color:var(--acc);background:#1c2430}
+.trashbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 10px}
+.empty{color:var(--dim);font-size:13px;padding:34px 0;text-align:center}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;background:var(--card);border:1px solid var(--line);box-shadow:0 8px 28px #000a;color:var(--fg);font-size:13px;padding:10px 12px 10px 16px;border-radius:10px;display:flex;gap:14px;align-items:center;z-index:9;max-width:92vw}
+.toast[hidden]{display:none}
+.toast .msg{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:640px){.wrap{padding:16px 14px 60px}header{padding:22px 14px 12px}}
 </style>
 </head>
 <body>
@@ -54,6 +76,12 @@ footer{color:var(--dim);font-size:12px;padding:22px 0 0;border-top:1px solid var
 </header>
 <div class="wrap">
 
+<div class="tabs">
+<button class="tab on" id="tabList" type="button">題型清單</button>
+<button class="tab" id="tabTrash" type="button">垃圾桶</button>
+</div>
+
+<div id="listPane">
 <div class="bar"><span class="lab">難易度</span><span id="diffBar" style="display:contents"></span></div>
 <div class="bar"><span class="lab">輸入型態</span><span id="typeBar" style="display:contents"></span></div>
 <div class="bar"><span class="lab">主題</span><span id="topicBar" style="display:contents"></span></div>
@@ -71,6 +99,7 @@ footer{color:var(--dim);font-size:12px;padding:22px 0 0;border-top:1px solid var
 <th data-k="3" style="width:96px">主題</th>
 <th data-k="4" style="width:78px">範例維度</th>
 <th data-k="5" style="width:80px">題庫</th>
+<th class="act"></th>
 </tr></thead>
 <tbody id="tb"></tbody>
 </table>
@@ -79,10 +108,40 @@ footer{color:var(--dim);font-size:12px;padding:22px 0 0;border-top:1px solid var
 <b>難易度怎麼算：</b>ZeroJudge 沒有官方難度，這裡用 <code>0.7 ×（100 − 通過比率）＋ 0.3 ×（人氣冷門度）</code> 綜合計算，分數越高越難。通過比率取自各題「通過人數／送出人數」；人氣以解題人數取對數，避免冷門新題被誤判成簡單。分級門檻：入門 &lt;22、基礎 22–38、中等 38–55、挑戰 ≥55。<br>
 <b>範例維度：</b><code>5x5</code> 是範例測資中偵測到連續 5 行、每行 5 個數字的矩形區塊；<code>C9</code> 是連續 9 行等長字元格（如 <code>.#..#</code>）；<code>—</code> 表示屬回合模擬類、輸入非格狀。
 </div>
+</div>
+
+<div id="trashPane" hidden>
+<div class="trashbar">
+<button class="btn" id="restoreAll" type="button">全部還原</button>
+<button class="btn" id="copyIds" type="button">複製題號</button>
+<span class="dim" id="trashHint"></span>
+</div>
+<table>
+<thead><tr>
+<th style="width:74px">題號</th>
+<th>題名</th>
+<th style="width:82px">輸入型態</th>
+<th style="width:96px">主題</th>
+<th style="width:168px">刪除時間</th>
+<th class="act2"></th>
+</tr></thead>
+<tbody id="ttb"></tbody>
+</table>
+<div class="empty" id="trashEmpty" hidden>垃圾桶是空的。<br>在清單裡把滑鼠移到某一列，點右邊的 ✕ 就會把那題丟進來。</div>
+<div class="note">
+<b>關於刪除：</b>刪掉的題目只是被「隱藏」，原始資料還在頁面裡，隨時可以還原。這份刪除名單存在<b>這台裝置的這個瀏覽器</b>（localStorage），換電腦、換瀏覽器或清除瀏覽資料後，清單會回到完整的 206 題。想把刪除結果固定進網頁本身，用「複製題號」把名單複製起來給我，我幫你直接寫進檔案。
+</div>
+</div>
+
 
 <footer>
 資料抓取日期 2026-08-08｜來源：<a href="https://zerojudge.tw/" target="_blank">zerojudge.tw</a>｜通過率為該站標示之「非即時」統計。
 </footer>
+</div>
+
+<div class="toast" id="toast" hidden>
+<span class="msg" id="toastMsg"></span>
+<button class="btn" id="undoBtn" type="button">復原</button>
 </div>
 
 <script>
@@ -298,8 +357,22 @@ const D=[
 ];
 
 const dIdx=s=>DIFF.findIndex(d=>s>=d[1]&&s<d[2]);
-let fType=null,fTopic=null,fDiff=null,fq="",sk=8,sd=1;
+let fType=null,fTopic=null,fDiff=null,fq="",sk=8,sd=1,view="list";
 const topics=[...new Set(D.map(d=>d[3]))].sort();
+const byId={};D.forEach(d=>byId[d[0]]=d);
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+
+/* ── 垃圾桶狀態：{題號: 刪除時間戳}，存在 localStorage ── */
+const TKEY="zj2d_trash_v1";
+let trash={};
+try{trash=JSON.parse(localStorage.getItem(TKEY))||{}}catch(e){trash={}}
+Object.keys(trash).forEach(id=>{if(!byId[id])delete trash[id]});   // 資料更新後已不存在的題號就清掉
+function saveTrash(){try{localStorage.setItem(TKEY,JSON.stringify(trash))}catch(e){}}
+const isDel=id=>Object.prototype.hasOwnProperty.call(trash,id);
+const delIds=()=>Object.keys(trash).sort((a,b)=>trash[b]-trash[a]);
+const fmtTime=ts=>new Date(ts).toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
+
+const $=id=>document.getElementById(id);
 
 function bar(el,items,get,set){
   el.innerHTML="";
@@ -314,36 +387,96 @@ function bar(el,items,get,set){
     el.appendChild(c);
   });
 }
+
 function render(){
-  let rows=D.filter(d=>(!fType||d[2]===fType)&&(!fTopic||d[3]===fTopic)&&(fDiff===null||dIdx(d[8])===fDiff)&&(!fq||(d[0]+d[1]).toLowerCase().includes(fq)));
+  const live=D.filter(d=>!isDel(d[0])),nDel=delIds().length;
+  $("tabList").textContent="題型清單 "+live.length;
+  $("tabTrash").textContent="垃圾桶 "+nDel;
+  $("tabList").classList.toggle("on",view==="list");
+  $("tabTrash").classList.toggle("on",view==="trash");
+  $("listPane").hidden=view!=="list";
+  $("trashPane").hidden=view!=="trash";
+  if(view==="trash"){renderTrash();return;}
+
+  let rows=live.filter(d=>(!fType||d[2]===fType)&&(!fTopic||d[3]===fTopic)&&(fDiff===null||dIdx(d[8])===fDiff)&&(!fq||(d[0]+d[1]).toLowerCase().includes(fq)));
   rows.sort((a,b)=>{const x=a[sk],y=b[sk];return (typeof x==="number"?x-y:String(x).localeCompare(String(y)))*sd});
-  document.getElementById("count").textContent="顯示 "+rows.length+" / "+D.length+" 題";
-  document.getElementById("tb").innerHTML=rows.map(d=>{
+  $("count").textContent="顯示 "+rows.length+" / "+live.length+" 題"+(nDel?"（已刪除 "+nDel+" 題，在垃圾桶裡）":"");
+  $("tb").innerHTML=rows.map(d=>{
     const i=dIdx(d[8]),w=Math.max(6,Math.round(d[8]*0.9));
     const u='https://zerojudge.tw/ShowProblem?problemid='+d[0];
     return '<tr><td class="pid"><a href="'+u+'" target="_blank" rel="noopener">'+d[0]+'</a></td>'
-    +'<td><a class="tl" href="'+u+'" target="_blank" rel="noopener">'+d[1].replace(/</g,"&lt;")+'</a> <a class="sub2" href="https://zerojudge.tw/Submissions?problemid='+d[0]+'&status=AC" target="_blank" rel="noopener" title="看這題的 AC 解題紀錄">AC 紀錄</a></td>'
+    +'<td><a class="tl" href="'+u+'" target="_blank" rel="noopener">'+esc(d[1])+'</a> <a class="sub2" href="https://zerojudge.tw/Submissions?problemid='+d[0]+'&status=AC" target="_blank" rel="noopener" title="看這題的 AC 解題紀錄">AC 紀錄</a></td>'
     +'<td><div class="dbar"><i style="width:'+w+'px;background:var(--d'+(i+1)+')"></i><span class="dt D'+i+'">'+DIFF[i][0]+'</span><span class="dim">'+d[8]+'</span></div></td>'
     +'<td class="num">'+d[6]+'%</td><td class="num">'+d[7].toLocaleString()+'</td>'
     +'<td><span class="tag">'+TYPE[d[2]]+'</span></td>'
-    +'<td class="dim">'+d[3]+'</td><td class="dims">'+d[4]+'</td><td class="dim">'+d[5]+'</td></tr>';
+    +'<td class="dim">'+d[3]+'</td><td class="dims">'+d[4]+'</td><td class="dim">'+d[5]+'</td>'
+    +'<td class="act"><button class="xb" type="button" data-id="'+d[0]+'" title="移到垃圾桶" aria-label="刪除 '+d[0]+'">✕</button></td></tr>';
   }).join("");
-  bar(document.getElementById("diffBar"),DIFF.map((t,i)=>[i,t[0],D.filter(d=>dIdx(d[8])===i).length]),()=>fDiff,v=>fDiff=v);
-  bar(document.getElementById("typeBar"),Object.keys(TYPE).map(k=>[k,TYPE[k],D.filter(d=>d[2]===k).length]),()=>fType,v=>fType=v);
-  bar(document.getElementById("topicBar"),topics.map(t=>[t,t,D.filter(d=>d[3]===t).length]),()=>fTopic,v=>fTopic=v);
-  document.querySelectorAll("th").forEach(th=>{
+  bar($("diffBar"),DIFF.map((t,i)=>[i,t[0],live.filter(d=>dIdx(d[8])===i).length]),()=>fDiff,v=>fDiff=v);
+  bar($("typeBar"),Object.keys(TYPE).map(k=>[k,TYPE[k],live.filter(d=>d[2]===k).length]),()=>fType,v=>fType=v);
+  bar($("topicBar"),topics.map(t=>[t,t,live.filter(d=>d[3]===t).length]),()=>fTopic,v=>fTopic=v);
+  document.querySelectorAll("th[data-k]").forEach(th=>{
     const k=+th.dataset.k;
     th.classList.toggle("sorted",k===sk);
     th.textContent=th.textContent.replace(/ [▲▼]$/,"")+(k===sk?(sd>0?" ▲":" ▼"):"");
   });
 }
-document.querySelectorAll("th").forEach(th=>th.onclick=()=>{
+
+function renderTrash(){
+  const ids=delIds();
+  $("trashEmpty").hidden=ids.length>0;
+  $("restoreAll").disabled=$("copyIds").disabled=ids.length===0;
+  $("trashHint").textContent=ids.length?"共 "+ids.length+" 題，點「還原」放回清單":"";
+  $("ttb").innerHTML=ids.map(id=>{
+    const d=byId[id],u='https://zerojudge.tw/ShowProblem?problemid='+id;
+    return '<tr><td class="pid"><a href="'+u+'" target="_blank" rel="noopener">'+id+'</a></td>'
+    +'<td><a class="tl" href="'+u+'" target="_blank" rel="noopener">'+esc(d[1])+'</a></td>'
+    +'<td><span class="tag">'+TYPE[d[2]]+'</span></td>'
+    +'<td class="dim">'+d[3]+'</td>'
+    +'<td class="dim">'+fmtTime(trash[id])+'</td>'
+    +'<td class="act2"><button class="rb" type="button" data-id="'+id+'">還原</button></td></tr>';
+  }).join("");
+}
+
+/* ── 刪除 / 還原 ── */
+let toastTimer=null;
+function del(id){trash[id]=Date.now();saveTrash();render();showToast(id)}
+function restore(id){delete trash[id];saveTrash();render()}
+function showToast(id){
+  const t=$("toast");
+  $("toastMsg").textContent="已移到垃圾桶："+id+" "+byId[id][1];
+  t.dataset.id=id;t.hidden=false;
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true},6000);
+}
+$("undoBtn").onclick=()=>{const t=$("toast");t.hidden=true;clearTimeout(toastTimer);if(t.dataset.id)restore(t.dataset.id)};
+$("tb").addEventListener("click",e=>{const b=e.target.closest(".xb");if(b)del(b.dataset.id)});
+$("ttb").addEventListener("click",e=>{const b=e.target.closest(".rb");if(b)restore(b.dataset.id)});
+
+$("restoreAll").onclick=()=>{trash={};saveTrash();render()};
+$("copyIds").onclick=()=>{
+  const txt=delIds().join(",");
+  const done=()=>{$("copyIds").textContent="已複製";setTimeout(()=>{$("copyIds").textContent="複製題號"},1600)};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,()=>fallback(txt,done))}
+  else fallback(txt,done);
+};
+function fallback(txt,done){
+  const ta=document.createElement("textarea");ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";
+  document.body.appendChild(ta);ta.select();try{document.execCommand("copy");done()}catch(e){}
+  document.body.removeChild(ta);
+}
+
+/* ── 分頁切換 ── */
+$("tabList").onclick=()=>{view="list";render()};
+$("tabTrash").onclick=()=>{view="trash";render()};
+
+document.querySelectorAll("th[data-k]").forEach(th=>th.onclick=()=>{
   const k=+th.dataset.k;
   if(k===sk)sd=-sd;else{sk=k;sd=(k===6||k===7)?-1:1;}
   render();
 });
-document.getElementById("q").addEventListener("input",e=>{fq=e.target.value.trim().toLowerCase();render()});
+$("q").addEventListener("input",e=>{fq=e.target.value.trim().toLowerCase();render()});
 render();
+
 </script>
 </body>
 </html>
